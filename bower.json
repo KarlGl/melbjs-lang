@@ -1,0 +1,19 @@
+{
+  "name": "gulp-ember",
+  "version": "0.0.0",
+  "authors": [
+    "Karl Glaser <kg@papercloud.com.au>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "ember": "~1.4.0"
+  }
+}
