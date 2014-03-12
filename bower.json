@@ -14,6 +14,7 @@
     "tests"
   ],
   "dependencies": {
-    "ember": "~1.4.0"
+    "ember": "~1.4.0",
+    "lodash": "~2.4.1"
   }
 }
