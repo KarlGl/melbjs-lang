@@ -1,14 +1,17 @@
+/*
+    This is the lexer. It performs lexical analysis of a string (the code),
+    and turns it into an array of tokens. which may be a plain string,
+    or an object with the keys "type" and "value" (in the case of identifiers).
+*/
+
 var _ = require('../bower_components/lodash/dist/lodash');
 var l = function(c) {
     console.log(c)
 }
 var getType = function(c) {
     return _.reduce({
-        begin: function(c) {
-            return c === "("
-        },
-        end: function(c) {
-            return c === ")"
+        beginExp: function(c) {
+            return c === "`"
         },
         quote: function(c) {
             return c === '"'
@@ -16,7 +19,7 @@ var getType = function(c) {
         comma: function(c) {
             return c === ','
         },
-        beginSet: function(c) {
+        beginAssign: function(c) {
             return c === '{'
         },
         endSet: function(c) {

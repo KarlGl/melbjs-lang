@@ -1,6 +1,14 @@
-window.lexer = require('./lexer')
-window.parser = require('./parser')
+lexer = require('./lexer')
+parser = require('./parser')
+evaluator = require('./evaluator')
 
-window.eval = function(input) {
-	
+window.lexer = lexer
+window.parser = parser
+window.evaluator = evaluator
+
+window.karl = function(input) {
+    return evaluator.eval(
+        parser.parse(
+            lexer.lex(
+                input)));
 }
