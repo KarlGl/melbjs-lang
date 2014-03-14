@@ -10,6 +10,9 @@ var l = function(c) {
 var nativeFunctions = {
     double: function(args) {
         return args + " * 2"
+    },
+    addition: function(args) {
+        return args.left + " + " + args.right
     }
 }
 var throwIfFalse = function(test, msg) {
@@ -24,9 +27,33 @@ exports.eval = function(tree) {
         if (!leaf.type)
             return leaf;
 
+        if (leaf.type === 'global') {
+            return _.reduce(leaf.body, function(ac, node) {
+                return ac + evalLeaf(node)
+            }, "")
+        }
         if (leaf.type === 'expression') {
             return throwIfFalse(nativeFunctions[evalLeaf(leaf.body[0])], 'No function by the name of ' + leaf.body[0])(evalLeaf(leaf.body[2]))
         }
+        if (leaf.type === 'hash') {
+            var hash = {}
+            var modf = function(x, i) {
+                return i % 2 === 0
+            }
+            var keysAndVals = _.select(leaf.body, modf)
+            var keys = _.select(keysAndVals, modf)
+            var vals = _.select(keysAndVals,
+                function(x, i) {
+                    return i % 2 === 1
+                });
+
+            return _.reduce(_.zip(keys, vals),
+                function(ac, pair) {
+                    ac[pair[0]] = pair[1]
+                    return ac
+                }, {})
+        }
+        return null;
     }
-    return evalLeaf(tree[0])
+    return evalLeaf(tree)
 }

@@ -22,6 +22,9 @@ var getType = function(c) {
         beginHash: function(c) {
             return c === '{'
         },
+        endHash: function(c) {
+            return c === '}'
+        },
         assign: function(c) {
             return c === ':'
         },

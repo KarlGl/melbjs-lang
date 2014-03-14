@@ -16,11 +16,13 @@ exports.parse = function(remaining) {
                 return writeTo
             }
 
-            // If expression is complete, continue on parent expression.
+            // If expression is filled, continue on parent.
+            var filledExpression = (writeTo.type === 'expression' &&
+                writeTo.body.length === 3)
+            var filledHash = (writeTo.type === 'hash' &&
+                token === 'endHash')
             if (writeTo &&
-                writeTo.type === 'expression' &&
-                writeTo.body &&
-                writeTo.body.length === 3) {
+                (filledExpression || filledHash)) {
                 writeTo = writeTo.parent
             }
 
@@ -55,7 +57,15 @@ exports.parse = function(remaining) {
 
         if (remaining.length)
             return parseSingle(_.first(remaining), _.rest(remaining))
+        else
+            return {
+                type: 'global',
+                body: []
+            }
     }
-    return parseRest(remaining, {body: []})
+    return parseRest(remaining, {
+        type: 'global',
+        body: []
+    })
     // return tree
 }
