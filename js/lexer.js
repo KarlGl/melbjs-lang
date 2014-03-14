@@ -19,10 +19,7 @@ var getType = function(c) {
         comma: function(c) {
             return c === ','
         },
-        beginAssign: function(c) {
-            return c === '{'
-        },
-        endSet: function(c) {
+        beginHash: function(c) {
             return c === '{'
         },
         assign: function(c) {
