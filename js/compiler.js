@@ -9,11 +9,11 @@ var l = function(c) {
 }
 var nativeFunctions = {
     double: function(args) {
-        return args + " * 2;"
+        return "(" + args + " * 2)"
     },
     addition: function(args) {
         args = eval(args)
-        return args.left + " + " + args.right + ";"
+        return args.left + " + " + args.right + ""
     }
 }
 var throwIfFalse = function(test, msg) {
