@@ -5,6 +5,10 @@ exports.functions = {
     addition: function(args) {
         args = eval(args)
         return args.left + " + " + args.right + ""
+    },
+    'square it': function(args) {
+        args = eval(args)
+        return "(" + args + " * 2)" 
     }
 }
 
