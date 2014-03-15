@@ -53,12 +53,18 @@ exports.init = (function() {
 
     var inputChange = function() {
         var textIn = input.value
+        console.log("New Evaluation!")
 
         var outputRemainingSteps = function(outputs, functions) {
             if (!outputs.length)
                 return
             var result = core.functionRunner(functions, textIn);
+            // write to the DOM
             $(_.first(outputs)).html(result)
+
+            // write to the console.
+            console.log(result)
+
             outputRemainingSteps(_.rest(outputs), _.initial(functions))
         }
 
