@@ -9,5 +9,9 @@ var l = function(c) {
 }
 
 exports.eval = function(string) {
-  return eval(string)
+    try {
+        return eval(string)
+    } catch (exception) {
+        return exception.message;
+    }
 }

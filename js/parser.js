@@ -26,6 +26,13 @@ exports.parse = function(remaining) {
                 writeTo = writeTo.parent
             }
 
+            // If it's an end hash, don't write anything move on.
+            if (token === 'endHash') {
+                parseRest(rest, innerTree)
+                return writeTo
+            }
+
+
             if (token === 'beginExp') {
                 var innerTree = {
                     type: 'expression',
@@ -37,12 +44,17 @@ exports.parse = function(remaining) {
                 return out
             }
 
-            // if (token === 'beginHash') {
-            //     return innerTree = [{
-            //         type: 'hash',
-            //         body: parseRest(rest)
-            //     }]
-            // }
+
+            if (token === 'beginHash') {
+                var innerTree = {
+                    type: 'hash',
+                    body: [],
+                    parent: writeTo
+                }
+                var out = flowOut([innerTree])
+                parseRest(rest, innerTree)
+                return out
+            }
 
             // Lookup the value part if you are an identifier.
             if (token.hasOwnProperty('type') && token.type === 'identifier')

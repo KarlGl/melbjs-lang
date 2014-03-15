@@ -6,6 +6,9 @@ describe('Full stack', function() {
     it('doubles', function() {
         expect(app.karl('`double,3')).toEqual(6)
     })
+    it('does addition', function() {
+	    expect(app.karl('`addition,{left:10,right:5}')).toEqual(15)
+	  })
 })
 
 // describe("Lexer", function() {

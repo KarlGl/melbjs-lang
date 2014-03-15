@@ -1,20 +1,16 @@
-lexer = require('./lexer')
-parser = require('./parser')
-compiler = require('./compiler')
-evaluator = require('./evaluator')
+var core = require('./core')
 
-exports.karl = function(input) {
-    return evaluator.eval(
-        compiler.eval(
-            parser.parse(
-                lexer.lex(
-                    input))))
+var isBrowser = (typeof window !== 'undefined')
+
+if (isBrowser) {
+    frontend = require('./frontend')
 }
 
-if (typeof window !== 'undefined') {
-	window.lexer = lexer
-	window.parser = parser
-	window.evaluator = evaluator
-	window.karl = exports.karl
-}
+exports.karl = core.karl
 
+if (isBrowser) {
+    window.lexer = lexer
+    window.parser = parser
+    window.evaluator = evaluator
+    window.karl = exports.karl
+}
