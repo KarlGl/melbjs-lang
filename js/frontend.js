@@ -51,6 +51,10 @@ exports.init = (function() {
 
     $('body').append(docs)
 
+    var examples = document.createElement('div')
+    $(examples).html("<h2>Examples</h2><pre>do addition with \nthe left with \ndo double with 1 \nand right with \n2 . </pre> Output: 4")
+    window.document.body.appendChild(examples)
+
     var inputChange = function() {
         var textIn = input.value
         console.log("New Evaluation!")

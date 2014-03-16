@@ -8,7 +8,7 @@ exports.functions = {
     },
     'square it': function(args) {
         args = eval(args)
-        return "(" + args + " * 2)" 
+        return "(" + args + " * " + args +  ")" 
     }
 }
 

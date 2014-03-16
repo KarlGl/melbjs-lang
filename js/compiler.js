@@ -44,7 +44,9 @@ exports.eval = function(tree) {
 
             return "Object({" + _.reduce(_.zip(keys, vals),
                 function(ac, pair) {
-                    return ac.concat(pair[0] + ": " + pair[1])
+                    throwIfFalse(pair[0], "No lhs of hash")
+                    throwIfFalse(pair[1], "No rhs of hash")
+                    return ac.concat(evalLeaf(pair[0]) + ": " + evalLeaf(pair[1]))
                 }, []).join(",") + "});"
         }
         return null;
