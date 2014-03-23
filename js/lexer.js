@@ -40,13 +40,10 @@ exports.run = function(input) {
 
         var isIdentifier = function(el) {
             // could be checking the -1 indexed token.
-            if (!el)
-                return false;
-            return (el.hasOwnProperty('type') &&
-                el.type === 'identifier');
+            return (el && el.type === 'identifier');
         }
 
-        // factory for new tokens with value.
+        // factory for appending new tokens with value.
         var append = function(ac, type, c) {
             return ac.concat({
                 type: type,
@@ -61,7 +58,7 @@ exports.run = function(input) {
         var previousToken = _.last(ac)
 
         if (type) {
-            return ac.concat(type)
+            return append(ac, type, null)
         } else {
             return isIdentifier(previousToken) ?
                 addToLastTokensValue(ac, c) :

@@ -12,20 +12,29 @@ exports.run = function(tokens) {
         if (remainingTokens.length) {
             var token = _.first(remainingTokens);
 
-            if (token === 'beginExp') {
-                var innerTree = {
-                    type: 'expression',
-                    body: [],
-                    parent: target
-                }
-                target.body.push(innerTree);
-                parseRemaining(innerTree, _.rest(remainingTokens))
-            } else {
-                parseRemaining(target, _.rest(remainingTokens))
+            var tokenHandler = {
+                defaultHandler: function(target) {
+                    target.body.push(token);
+                    return target;
+                },
+                beginExp: function(target) {
+                    var innerTree = {
+                        type: 'expression',
+                        body: [],
+                        parent: target
+                    }
+                    target.body.push(innerTree);
+                    return innerTree;
+                },
+                comma: function(target) {
+                    return this.defaultHandler(target);
+                },
+                identifier: function(target) {
+                    return this.defaultHandler(target);
+                },
+            };
 
-                target.body.push(token);
-            }
-
+            parseRemaining(tokenHandler[token.type](target), _.rest(remainingTokens))
         }
     }
     var mainObject = {
