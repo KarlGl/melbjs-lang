@@ -26,6 +26,9 @@ exports.run = function(tokens) {
                     target.body.push(innerTree);
                     return innerTree;
                 },
+                endExp: function(target) {
+                    return target.parent;
+                },
                 comma: function(target) {
                     return this.defaultHandler(target);
                 },

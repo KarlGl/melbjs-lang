@@ -19,16 +19,18 @@ exports.run = function(tree) {
     var evalLeaf = function(leaf) {
         if (!leaf.type)
             return leaf;
-
         if (leaf.type === 'main object') {
             return _.reduce(leaf.body, function(ac, node) {
                 return ac + evalLeaf(node)
             }, "")
         }
         if (leaf.type === 'expression') {
+            var args = _.select(leaf.body,
+                function(x, i) {
+                    return i % 2 === 0
+                });
             var lhs = throwIfFalse(leaf.body[0], "Expression had no function name (first part).")
-            var rhs = throwIfFalse(leaf.body[2], "Expression had no arguments to evaluate the function with (second part).")
-            return throwIfFalse(nativeFunctions.functions[evalLeaf(lhs)], 'No function by the name of ' + lhs)(evalLeaf(rhs))
+            return throwIfFalse(nativeFunctions.functions[evalLeaf(lhs)], 'No function by the name of ' + lhs)(args.map(evalLeaf))
         }
         if (leaf.type === 'hash') {
             var hash = {}
@@ -49,7 +51,9 @@ exports.run = function(tree) {
                     return ac.concat(evalLeaf(pair[0]) + ": " + evalLeaf(pair[1]))
                 }, []).join(",") + "});"
         }
-        return leaf.value.toString();
+        if (leaf.type === 'identifier') {
+            return leaf.value.toString();
+        }
     }
 
     return evalLeaf(tree)
