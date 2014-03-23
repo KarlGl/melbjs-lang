@@ -15,12 +15,12 @@ var throwIfFalse = function(test, msg) {
     return test
 }
 
-exports.eval = function(tree) {
+exports.run = function(tree) {
     var evalLeaf = function(leaf) {
         if (!leaf.type)
             return leaf;
 
-        if (leaf.type === 'global') {
+        if (leaf.type === 'main object') {
             return _.reduce(leaf.body, function(ac, node) {
                 return ac + evalLeaf(node)
             }, "")
@@ -49,7 +49,7 @@ exports.eval = function(tree) {
                     return ac.concat(evalLeaf(pair[0]) + ": " + evalLeaf(pair[1]))
                 }, []).join(",") + "});"
         }
-        return null;
+        return leaf.value.toString();
     }
 
     return evalLeaf(tree)

@@ -4,30 +4,30 @@ var compiler = require('./compiler')
 var evaluator = require('./evaluator')
 var _ = require('../bower_components/lodash/dist/lodash');
 
+// Call .run on each object.
 exports.functionRunner = function(functions, input) {
-    // terminator...
-    if (!functions.length) {
-        return input;
+    if (functions.length) {
+        try {
+            var output = _.first(functions).run(input)
+        } catch (exception) {
+            return exception.message
+        }
+        return exports.functionRunner(_.rest(functions), output)
+    } else {
+        // terminator...
+        return input
     }
-    try {
-        var output = _.first(functions)(input)
-    } catch (exception) {
-        return exception.message
-    }
-    return exports.functionRunner(_.rest(functions), output)
 }
 
 exports.allFunctions = [
-            lexer.lex,
-            parser.parse,
-            compiler.eval,
-            evaluator.eval
-        ]
+    lexer,
+    parser,
+    compiler,
+    evaluator
+]
 
-exports.karl = function(input) {
-    return exports.functionRunner(
-        exports.allFunctions, input)
-
+exports.run = function(input) {
+    return exports.functionRunner(exports.allFunctions, input)
 }
 
 exports.lexer = lexer

@@ -10,7 +10,7 @@ if (isBrowser) {
     window.parser = core.parser
     window.evaluator = core.evaluator
     window.compiler = core.compiler
-    window.karl = core.karl
+    window.run = core.run
 }
 
 exports.init = (function() {

@@ -8,7 +8,7 @@ var l = function(c) {
     console.log(c)
 }
 
-exports.eval = function(string) {
+exports.run = function(string) {
     try {
         return eval(string)
     } catch (exception) {

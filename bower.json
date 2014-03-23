@@ -1,20 +1,16 @@
 {
-  "name": "gulp-ember",
+  "name": "hello-world-bespoke",
   "version": "0.0.0",
-  "authors": [
-    "Karl Glaser <kg@papercloud.com.au>"
-  ],
-  "license": "MIT",
-  "private": true,
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests"
-  ],
   "dependencies": {
-    "ember": "~1.4.0",
-    "lodash": "~2.4.1"
+    "bespoke.js": "~0.4.0",
+    "bespoke-keys": "~0.1.0",
+    "bespoke-touch": "~0.1.0",
+    "bespoke-bullets": "~0.2.0",
+    "bespoke-scale": "~0.2.0",
+    "bespoke-hash": "~0.1.0",
+    "bespoke-progress": "~0.1.0",
+    "bespoke-state": "~0.2.0",
+    "bespoke-forms": "~0.1.0",
+    "prism": "gh-pages"
   }
 }
