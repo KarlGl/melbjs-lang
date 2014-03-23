@@ -2,6 +2,7 @@ var lexer = require('./lexer')
 var parser = require('./parser')
 var compiler = require('./compiler')
 var evaluator = require('./evaluator')
+var subroutines = require('./subroutines')
 var _ = require('../bower_components/lodash/dist/lodash');
 
 // Call .run on each object.
@@ -34,3 +35,4 @@ exports.lexer = lexer
 exports.compiler = compiler
 exports.parser = parser
 exports.evaluator = evaluator
+exports.subroutines = subroutines

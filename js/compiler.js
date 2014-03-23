@@ -3,7 +3,7 @@
   evaluates each item, and produces the output code to run in js with evaluator.
 */
 
-var nativeFunctions = require('./native_functions');
+var subroutines = require('./subroutines');
 var _ = require('../bower_components/lodash/dist/lodash');
 var l = function(c) {
     console.log(c)
@@ -30,7 +30,7 @@ exports.run = function(tree) {
                     return i % 2 === 0
                 });
             var lhs = throwIfFalse(leaf.body[0], "Expression had no function name (first part).")
-            return throwIfFalse(nativeFunctions.functions[evalLeaf(lhs)], 'No function by the name of ' + lhs)(args.map(evalLeaf))
+            return throwIfFalse(subroutines.functions[evalLeaf(lhs)], 'No function by the name of ' + lhs)(args.map(evalLeaf))
         }
         if (leaf.type === 'hash') {
             var hash = {}

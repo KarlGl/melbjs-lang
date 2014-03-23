@@ -1,11 +1,12 @@
 var $ = require('../bower_components/jquery/jquery.js')
 var _ = require('../bower_components/lodash/dist/lodash');
 var core = require('./core')
-var nativeFunctions = require('./native_functions');
+var subroutines = require('./subroutines');
 
 var isBrowser = (typeof window !== 'undefined')
 
 if (isBrowser) {
+    window.subroutines = subroutines
     window.lexer = core.lexer
     window.parser = core.parser
     window.evaluator = core.evaluator
@@ -24,10 +25,10 @@ exports.init = (function() {
         return outputDiv
     })
 
-    if (nativeFunctions.docs) {
+    if (subroutines.docs) {
         var docs = $(document.createElement('div'))
         docs.append($('<h2>Built in functions:</h2>'))
-        nativeFunctions.docs.map(function(doc) {
+        subroutines.docs.map(function(doc) {
             var docEl = $(document.createElement('div'))
             var docName = $(document.createElement('h3'))
             var docDesc = $(document.createElement('div'))
