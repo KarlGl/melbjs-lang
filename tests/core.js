@@ -22,6 +22,7 @@ describe('Full stack', function() {
     });
     it('if statement wont evaluate the non active branch', function() {
         var called = false;
+        // TODO replace with sinon... this doesn't unstub
         // mock
         app.subroutines.functions['='] = function() {
             called = true;
@@ -36,10 +37,16 @@ describe('Full stack', function() {
     it('wont call function body when definied', function() {
         var called = false;
         // mock
+        old = app.subroutines.functions['+'];
         app.subroutines.functions['+'] = function() {
             called = true;
         }
         app.run('(`,(+,1,1))')
         expect(called).toEqual(false)
+        app.subroutines.functions['+'] = old;
+    });
+    it('define function with argument', function() {
+        console.log(app.run('(.,(`,(+,(*,a),1),a),2)'))
+        expect(3).toEqual(3);
     });
 })

@@ -46,16 +46,25 @@ var coreFunctions = {
     functions: {
         // call
         '.': function(args, evalLeaf) {
+            // call the function with array of evaluated arguments.
             return evalLeaf(args[0]).call(this, _.rest(args).map(evalLeaf));
         },
         // define function
+        // body, argument name 1, argument name 2, etc
         '`': function(args, evalLeaf) {
+            functionBodyLeaf = args[0]
             return function(funcParams) {
+                var localVars = {}
+                _.rest(args).map(evalLeaf).forEach(function(argName, i) {return localVars[argName] = funcParams[i]})
 
+                functionBodyLeaf['localVars'] = localVars
                 return evalLeaf(args[0])
-
             };
-        }
+        },
+        // lookup what is stored in an argument
+        '*': function(args, evalLeaf, parent) {
+            return parent.localVars[evalLeaf(args[0])];
+        },
     }
 }
 

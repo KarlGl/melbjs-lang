@@ -3,7 +3,8 @@ var subroutines = require('../subroutines');
 var _ = require('../../bower_components/lodash/dist/lodash');
 
 // This is where we call native functions like assignment etc.
-exports.Expression = function(evalFunc, arguments) {
+exports.Expression = function(evalFunc, leaf) {
+    var arguments = leaf.body
     var functionIdentifier = errors.throwIfFalse(arguments[0], "Expression had no function name (first part).");
     var functionName = functionIdentifier.value
     return {
@@ -21,7 +22,8 @@ exports.Expression = function(evalFunc, arguments) {
             })),
 
         run: function() {
-            return this.function(this.arguments, evalFunc)
+            // pass the local varialbes to the function running
+            return this.function(this.arguments, evalFunc, leaf.parent)
         }
     }
 }

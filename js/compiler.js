@@ -9,6 +9,7 @@ var _ = require('../bower_components/lodash/dist/lodash');
 
 exports.run = function(tree) {
     var evalLeaf = function(leaf) {
+
         if (!leaf.type)
             return leaf;
         if (leaf.type === 'main object') {
@@ -18,7 +19,7 @@ exports.run = function(tree) {
         }
         if (leaf.type === 'expression') {
             // Call the expression as a function. runs evalLeaf.
-            return expression.Expression(evalLeaf, leaf.body).run()
+            return expression.Expression(evalLeaf, leaf).run()
         }
         if (leaf.type === 'hash') {
             var hash = {}
