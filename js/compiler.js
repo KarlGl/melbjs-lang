@@ -3,17 +3,9 @@
   evaluates each item, and produces the output code to run in js with evaluator.
 */
 
-var subroutines = require('./subroutines');
+var expression = require('./modules/expression');
+var errors = require('./modules/errors');
 var _ = require('../bower_components/lodash/dist/lodash');
-var l = function(c) {
-    console.log(c)
-}
-var throwIfFalse = function(test, msg) {
-    if (!test) {
-        throw {message: msg}
-    }
-    return test
-}
 
 exports.run = function(tree) {
     var evalLeaf = function(leaf) {
@@ -25,12 +17,8 @@ exports.run = function(tree) {
             }, "")
         }
         if (leaf.type === 'expression') {
-            var args = _.select(leaf.body,
-                function(x, i) {
-                    return i % 2 === 0
-                });
-            var lhs = throwIfFalse(leaf.body[0], "Expression had no function name (first part).")
-            return throwIfFalse(subroutines.functions[evalLeaf(lhs)], 'No function by the name of ' + lhs)(args.map(evalLeaf))
+            // Call the expression as a function. runs evalLeaf.
+            return expression.Expression(evalLeaf, leaf.body).run()
         }
         if (leaf.type === 'hash') {
             var hash = {}
@@ -46,12 +34,17 @@ exports.run = function(tree) {
 
             return "Object({" + _.reduce(_.zip(keys, vals),
                 function(ac, pair) {
-                    throwIfFalse(pair[0], "No lhs of hash")
-                    throwIfFalse(pair[1], "No rhs of hash")
+                    errors.throwIfFalse(pair[0], "No lhs of hash")
+                    errors.throwIfFalse(pair[1], "No rhs of hash")
                     return ac.concat(evalLeaf(pair[0]) + ": " + evalLeaf(pair[1]))
                 }, []).join(",") + "});"
         }
+
+        // native data types.
         if (leaf.type === 'identifier') {
+            // if whitespace, ignore it.
+            if (/\s/.test(leaf.value))
+                return "";
             return leaf.value.toString();
         }
     }

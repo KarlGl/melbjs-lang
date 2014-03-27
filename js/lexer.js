@@ -2,9 +2,6 @@
     This is the lexer. It performs lexical analysis of a string (the code),
     and turns it into an array of tokens. which may be a plain string,
     or an object with the keys "type" and "value" (in the case of identifiers).
-    
-    Bug: need one space at end of all code if it's a hash.
-
 */
 
 var _ = require('../bower_components/lodash/dist/lodash');
