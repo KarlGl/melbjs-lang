@@ -44,7 +44,12 @@ describe('Full stack', function() {
         expect(spy.callCount).toEqual(0)
         app.subroutines.functions['+'].restore();
     });
-    it('define function with argument', function() {
+    it('define and call function with argument', function() {
+        // a plus 1 function, called with 2
         expect(app.run('(.,(`,(+,(*,a),1),a),2)')).toEqual(3);
+    });
+    it('assign function to var and call', function() {
+        expect(app.run("(=,add one,(`,(+,(*,a),1),a))\n(.,(@,add one),2)"))
+            .toEqual(3)
     });
 })
