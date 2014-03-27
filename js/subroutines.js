@@ -5,37 +5,65 @@ var truthy = function(c) {
     return (typeof(c) !== 'undefined' && c !== '0' && c !== 'false' && c !== false && c !== null)
 }
 
+// What to return if your function has no retrurn value. Can't use undefined because it will cast to string "undefined".
+var nothing = "";
 
-// All funcs are called with the first argument as thier name.
-exports.functions = {
-    '+': function(args, evalLeaf) {
-        return "(" +
-            args.map(evalLeaf).join('+') + ")";
+var coreFunctions = {
+    math: {
+        '+': function(args, evalLeaf) {
+            return args.length ?
+                "(" + args.map(evalLeaf).join('+') + ")" :
+                nothing;
+        },
     },
-    '=': function(args, evalLeaf) {
-        exports.functions[evalLeaf(args[0])] = evalLeaf(args[1]);
-        return "";
-    },
-    // lookup what is stored in a var
-    '@': function(args, evalLeaf) {
-        return exports.functions[evalLeaf(args[0])];
-    },
-    // call
-    '.': function(args, evalLeaf) {
-        return evalLeaf(args[0]).call(this, _.rest(args).map(evalLeaf));
-    },
-    // if
-    '^': function(args, evalLeaf) {
-        return truthy(evalLeaf(args[0])) ? evalLeaf(args[1]) : evalLeaf(args[2]);
-    },
-    // def
-    '`': function(args, evalLeaf) {
-        return function(funcParams) {
-            // Stop this from being pre evaluated.
-            // Stop this from running without the params being set.
 
-            return core.functionRunner([core.lexer, core.parser, core.compiler], evalLeaf(args[0]));
-
-        };
+    output: {
+        // log
+        '~': function(args, evalLeaf) {
+            console.log(args.map(evalLeaf).join(', '));
+            return nothing;
+        },
     },
+
+    storage: {
+        '=': function(args, evalLeaf) {
+            exports.functions[evalLeaf(args[0])] = evalLeaf(args[1]);
+            return nothing;
+        },
+        // lookup what is stored in a var
+        '@': function(args, evalLeaf) {
+            return exports.functions[evalLeaf(args[0])];
+        },
+    },
+
+    logic: {
+        // if
+        '?': function(args, evalLeaf) {
+            return truthy(evalLeaf(args[0])) ? evalLeaf(args[1]) : evalLeaf(args[2]);
+        },
+    },
+
+    functions: {
+        // call
+        '.': function(args, evalLeaf) {
+            return evalLeaf(args[0]).call(this, _.rest(args).map(evalLeaf));
+        },
+        // define function
+        '`': function(args, evalLeaf) {
+            return function(funcParams) {
+
+                return evalLeaf(args[0])
+
+            };
+        }
+    }
 }
+
+// Just put them all to the top level. first to an array of all namespaces, then reduce into one big object.
+exports.functions = _.keys(coreFunctions)
+    .map(function(key) {
+        return coreFunctions[key];
+    })
+    .reduce(function(rt, obj) {
+        return _.merge(rt, obj);
+    }, {})
