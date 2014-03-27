@@ -9,13 +9,10 @@ describe('Full stack', function() {
         expect(app.run('(=,1,1)\n(@,1)')).toEqual(1)
     });
     it('call function', function() {
-        app.subroutines.functions['1'] = function(args) {
-            return args[1]; //args[0] is the caller name
+        app.subroutines.functions['1'] = function(args, evalFun) {
+            return args[0];
         };
         expect(app.run('(.,(@,1),1)')).toEqual(1)
-    });
-    it('call plus', function() {
-        expect(app.run('(.,(@,+),1,1,1)')).toEqual(3)
     });
     it('if', function() {
         expect(app.run('(^,1,1,0)')).toEqual(1)

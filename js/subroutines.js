@@ -1,41 +1,40 @@
 var _ = require('../bower_components/lodash/dist/lodash');
 var core = require('./core');
 
+var truthy = function(c) {
+    return (typeof(c) !== 'undefined' && c !== '0' && c !== 'false' && c !== false && c !== null)
+}
+
+
 // All funcs are called with the first argument as thier name.
 exports.functions = {
-    '+': function(args) {
+    '+': function(args, evalLeaf) {
         return "(" +
-            _.rest(args).join('+') + ")";
+            args.map(evalLeaf).join('+') + ")";
     },
-    '=': function(args) {
-        // lvalue is ars[1]
-        exports.functions[args[1]] = args[2];
+    '=': function(args, evalLeaf) {
+        exports.functions[evalLeaf(args[0])] = evalLeaf(args[1]);
         return "";
     },
     // lookup what is stored in a var
-    '@': function(args) {
-        return exports.functions[args[1]];
+    '@': function(args, evalLeaf) {
+        return exports.functions[evalLeaf(args[0])];
     },
     // call
-    '.': function(args) {
-	    	var argumentsArray = ['anonFunction'].concat(_.rest(_.rest(args)))
-        return args[1].call(this, argumentsArray);
+    '.': function(args, evalLeaf) {
+        return evalLeaf(args[0]).call(this, _.rest(args).map(evalLeaf));
     },
     // if
-    '^': function(args) {
-        var truthy = function(c) {
-            return (typeof(c) !== 'undefined' && c !== '0' && c !== 'false' && c !== false && c !== null)
-        }
-
-        return truthy(args[1]) ? args[2] : args[3];
+    '^': function(args, evalLeaf) {
+        return truthy(evalLeaf(args[0])) ? evalLeaf(args[1]) : evalLeaf(args[2]);
     },
     // def
-    '`': function(args) {
+    '`': function(args, evalLeaf) {
         return function(funcParams) {
-        	// Stop this from being pre evaluated.
-        	// Stop this from running without the params being set.
+            // Stop this from being pre evaluated.
+            // Stop this from running without the params being set.
 
-            return core.functionRunner([core.lexer, core.parser, core.compiler], args[1]);
+            return core.functionRunner([core.lexer, core.parser, core.compiler], evalLeaf(args[0]));
 
         };
     },
