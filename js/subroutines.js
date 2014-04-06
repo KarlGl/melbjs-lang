@@ -1,5 +1,6 @@
 var _ = require('../bower_components/lodash/dist/lodash');
 var core = require('./core');
+var errors = require('./modules/errors');
 var variableResolver = require('./modules/variable_resolver');
 
 var truthy = function(c) {
@@ -94,7 +95,9 @@ var coreFunctions = {
         '&': function(args, evalLeaf, parent) {
             var variableName = evalLeaf(args[0])
             // Needs to check over each parent in the tree for other local variables in the expression.
-            return variableResolver.VariableResolver.run(parent, variableName)
+            var resolved = variableResolver.VariableResolver.run(parent, variableName)
+            errors.throwIfFalse(resolved, 'Varible not defined ' + variableName)
+            return resolved;
         },
     }
 }

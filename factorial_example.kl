@@ -1,0 +1,24 @@
+=
+  factorial for
+  `
+    ?
+      <
+        &
+          current nth
+        2
+      1
+      *
+        &
+          current nth
+        .
+          @
+            factorial for
+          -
+            &
+              current nth
+            1
+    current nth
+.
+  @
+    factorial for
+  4
