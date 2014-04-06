@@ -7,7 +7,7 @@ var sinon = require('../bower_components/sinon/lib/sinon.js');
 
 describe('alternate syntax', function() {
     it('1+1', function() {
-        expect(app.run('+\n  1\n  1\n')).toEqual('2')
+        expect(app.run(' j')).toEqual('2')
     });
 })
 
