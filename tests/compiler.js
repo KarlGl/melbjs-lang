@@ -8,17 +8,11 @@ describe('Compiler', function() {
                 type: 'identifier',
                 value: '+'
             }, {
-                type: 'comma'
-            }, {
                 type: 'identifier',
                 value: '1'
             }, {
-                type: 'comma'
-            }, {
                 type: 'identifier',
                 value: '1'
-            }, {
-                type: 'comma'
             }, {
                 type: 'identifier',
                 value: '1'
@@ -32,12 +26,8 @@ describe('Compiler', function() {
                 type: 'identifier',
                 value: '+'
             }, {
-                type: 'comma'
-            }, {
                 type: 'identifier',
                 value: '1'
-            }, {
-                type: 'comma'
             }, {
                 type: 'identifier',
                 value: '1'

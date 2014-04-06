@@ -2,7 +2,8 @@
     This is the parser. It creates the parse tree from tokens spat out of the lexer.
 */
 var _ = require('../bower_components/lodash/dist/lodash');
-// var noBracketMode = true;
+// number of spaces to indent
+var TEXT_INDENT_WIDTH = 2;
 
 exports.run = function(tokens) {
 
@@ -19,8 +20,26 @@ exports.run = function(tokens) {
                 target.body.push(innerTree);
                 return innerTree;
             }
+            var generateComma = function() {
+                return target;
+            }
+            var generateEndExp = function() {
+                return target.parent;
+            }
 
             var tokenHandler = {
+                numberOfSpacesForIndent: function(num) {
+                    return this.textIndent() * TEXT_INDENT_WIDTH;
+                },
+                textIndent: function() {
+                    var getParent = function(child, count) {
+                        return (child.parent) ?
+                            getParent(child.parent, count + 1) :
+                            count;
+                    }
+                    return getParent(target, 0)
+
+                },
                 consecutiveSpaces: function() {
                     var spaces = function(rest, len) {
                         var toProcess, plus;
@@ -37,7 +56,7 @@ exports.run = function(tokens) {
                     }
                     return spaces(target.body, null)
                 },
-                changeSpaceInto: function(type) {
+                changeSpaceInto: function(createCallback) {
                     // returns nubmer of how many are whitespace at end
                     var changeSpace = function(rest, len) {
                         var toProcess = _.last(rest) && _.last(rest).type;
@@ -46,21 +65,27 @@ exports.run = function(tokens) {
                     }
 
                     // whole array minus, whitespace, with the new token on the end.
-                    target.body = _.rest(target.body, changeSpace(target.body, 0))
-                    return generateBeginExp();
+                    target.body = target.body.slice(0, target.body.length - changeSpace(target.body, 0))
+                    return createCallback();
 
                 },
                 defaultHandler: function() {
                     target.body.push(token);
                 },
                 beginExp: function() {
+
+                    if (this.consecutiveSpaces() === this.numberOfSpacesForIndent())
+                        this.changeSpaceInto(function() {
+                            return target; // do nothing.
+                        }) // side effecty
+
+
                     return generateBeginExp();
                 },
                 endExp: function() {
-                    return target.parent;
+                    return generateEndExp();
                 },
                 comma: function() {
-                    this.defaultHandler(target);
                     return target;
                 },
                 space: function() {
@@ -69,12 +94,38 @@ exports.run = function(tokens) {
                 },
                 newline: function() {
                     this.defaultHandler(target);
+
+                    // if you're the last token, squash all trailing whitespace.
+                    if (remainingTokens.length === 1) // only me
+                        this.changeSpaceInto(function() {
+                            return target; // do nothing.
+                        }) // side effecty
+
+
                     return target;
                 },
                 identifier: function() {
                     // if there was only a newline before this
-                    if (this.consecutiveSpaces() === 0)
-                        target = this.changeSpaceInto('beginExp') // side effecty
+
+                    if (this.consecutiveSpaces() === this.numberOfSpacesForIndent() -
+                        TEXT_INDENT_WIDTH)
+                        target = this.changeSpaceInto(generateEndExp) // side effecty
+                        // both could be true... we dont want this to run if that is the case.
+                    else if (this.consecutiveSpaces() === 0)
+                        target = this.changeSpaceInto(generateBeginExp) // side effecty
+
+                    if (this.consecutiveSpaces() === this.numberOfSpacesForIndent() + TEXT_INDENT_WIDTH) {
+                        target = this.changeSpaceInto(generateBeginExp) // side effecty
+                        var pullInto = _.last(target.parent.body);
+                        if (pullInto) {
+                            target.body.push(pullInto)
+                            target.parent.body.pop()
+                        }
+                    }
+
+                    if (this.consecutiveSpaces() === this.numberOfSpacesForIndent())
+                        target = this.changeSpaceInto(generateComma) // side effecty
+
                     this.defaultHandler(target)
                     return target;
                 },
@@ -88,12 +139,12 @@ exports.run = function(tokens) {
         body: []
     };
 
-    // if (noBracketMode)
-        // tokens = [{
-        //     type: 'newline',
-        //     value: '\n'
-        // }].concat(tokens)
-    parseRemaining(mainObject, tokens, null);
+    // add newline before and after the tokens.
+    parseRemaining(mainObject, [{
+        type: 'newline',
+    }].concat(tokens).concat({
+        type: 'newline',
+    }), null);
 
     return mainObject;
 }

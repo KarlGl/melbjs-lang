@@ -16,10 +16,12 @@ exports.Expression = function(evalFunc, leaf) {
                 evalFunc(functionIdentifier)],
             'No function by the name of ' + functionName),
 
-        arguments: _.rest(_.select(arguments,
-            function(x, i) {
-                return i % 2 === 0
-            })),
+        arguments: _.rest(arguments
+            // _.select(arguments,
+            // function(x, i) {
+                // return i % 2 === 0
+            // })
+            ),
 
         run: function() {
             // pass the local varialbes to the function running

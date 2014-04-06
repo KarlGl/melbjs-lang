@@ -16,8 +16,17 @@ if (isBrowser) {
 
 exports.init = (function() {
 
+    var styleForCode = function(el) {
+        el.style.fontFamily = "Courier New";
+    }
+
     var input = document.createElement('textarea')
     window.document.body.appendChild(input)
+
+    styleForCode(document.body);
+    styleForCode(input)
+    input.style.width = "50%"
+    input.style.height = "25%"
 
     var outputs = core.allFunctions.map(function() {
         var outputDiv = document.createElement('div')
