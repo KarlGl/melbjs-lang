@@ -34,8 +34,24 @@ exports.run = function(tokens) {
             var generateComma = function() {
                 return target;
             }
-            var generateEndExp = function() {
-                return target.parent;
+            var generateEndExp = function(calls) {
+                var getParent = function(child, calls) {
+                    return (calls) ?
+                        getParent(child.parent, calls - 1) :
+                        child;
+                }
+                return getParent(target, calls ? calls : 1)
+            }
+
+            var numberOfClosingExps = function(consecutiveSpaces, lastIndent) {
+                var func = function(indent, numberOfClosing) {
+                    if (consecutiveSpaces === lastIndent - indent)
+                        return numberOfClosing;
+                    if (consecutiveSpaces < lastIndent - indent)
+                        return func(indent + TEXT_INDENT_WIDTH, numberOfClosing + 1);
+                    return null;
+                }
+                return func(TEXT_INDENT_WIDTH, 1)
             }
 
             var tokenHandler = {
@@ -107,21 +123,32 @@ exports.run = function(tokens) {
                     this.defaultHandler(target);
 
                     // if you're the last token, squash all trailing whitespace.
-                    if (remainingTokens.length === 1) // only me
-                        this.changeSpaceInto(function() {
-                            return target; // do nothing.
-                        }) // side effecty
+                    if (remainingTokens.length === 1) { // only me
+
+                        // hmm, it's ok to leave a newline here if not closing anything right?
+                        // or handle the case of not matching the below with closing just one?
+
+                        var expressionsWeAreClosing = numberOfClosingExps(this.consecutiveSpaces(), this.numberOfSpacesForIndent())
+                        if (expressionsWeAreClosing)
+                            target = this.changeSpaceInto(function() {
+                                return generateEndExp(expressionsWeAreClosing)
+                            }); // side effecty
+                        else
+                            target = this.changeSpaceInto(function() {
+                                return target; // do nothing.
+                            });
+                    }
 
 
                     return target;
                 },
                 identifier: function() {
-                    // if there was only a newline before this
-
-                    if (this.consecutiveSpaces() === this.numberOfSpacesForIndent() -
-                        TEXT_INDENT_WIDTH)
-                        target = this.changeSpaceInto(generateEndExp) // side effecty
-                        // both could be true... we dont want this to run if that is the case.
+                    var expressionsWeAreClosing = numberOfClosingExps(this.consecutiveSpaces(), this.numberOfSpacesForIndent())
+                    if (expressionsWeAreClosing)
+                        target = this.changeSpaceInto(function() {
+                            return generateEndExp(expressionsWeAreClosing)
+                        }); // side effecty
+                    // both could be true... we dont want this to run if that is the case.
                     else if (this.consecutiveSpaces() === 0)
                         target = this.changeSpaceInto(generateBeginExp) // side effecty
 
@@ -132,7 +159,7 @@ exports.run = function(tokens) {
                     if (this.consecutiveSpaces() === this.numberOfSpacesForIndent())
                         target = this.changeSpaceInto(generateComma) // side effecty
 
-                    this.defaultHandler(target)
+                    this.defaultHandler(target);
                     return target;
                 },
             };
