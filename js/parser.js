@@ -11,12 +11,23 @@ exports.run = function(tokens) {
         if (remainingTokens.length) {
             var token = _.first(remainingTokens);
 
-            var generateBeginExp = function() {
+            var generateBeginExpWithPull = function() {
+                return generateBeginExp(function(innerTree) {
+                    var pullInto = _.last(target.body);
+                    if (pullInto) {
+                        innerTree.body.push(
+                            target.body.pop())
+                    }
+                });
+            }
+            var generateBeginExp = function(callback) {
                 var innerTree = {
                     type: 'expression',
                     body: [],
                     parent: target
                 }
+                if (callback)
+                    callback(innerTree);
                 target.body.push(innerTree);
                 return innerTree;
             }
@@ -115,12 +126,7 @@ exports.run = function(tokens) {
                         target = this.changeSpaceInto(generateBeginExp) // side effecty
 
                     if (this.consecutiveSpaces() === this.numberOfSpacesForIndent() + TEXT_INDENT_WIDTH) {
-                        target = this.changeSpaceInto(generateBeginExp) // side effecty
-                        var pullInto = _.last(target.parent.body);
-                        if (pullInto) {
-                            target.body.push(pullInto)
-                            target.parent.body.pop()
-                        }
+                        target = this.changeSpaceInto(generateBeginExpWithPull) // side effecty
                     }
 
                     if (this.consecutiveSpaces() === this.numberOfSpacesForIndent())

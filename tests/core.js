@@ -9,6 +9,9 @@ describe('alternate syntax', function() {
     it('1+1', function() {
         expect(app.run('+\n  1\n  1')).toEqual(2)
     });
+    it('embedded expressions', function() {
+        expect(app.run('+\n  +\n    2\n    2\n  1')).toEqual(5)
+    });
 })
 
 describe('variables', function() {
