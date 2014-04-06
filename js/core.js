@@ -11,7 +11,7 @@ exports.functionRunner = function(functions, input) {
         try {
             var output = _.first(functions).run(input)
         } catch (exception) {
-            return exception.message
+            return exception.message// + "\n" + exception.stack;
         }
         return exports.functionRunner(_.rest(functions), output)
     } else {

@@ -1,7 +1,9 @@
 var _ = require('../bower_components/lodash/dist/lodash');
 var core = require('./core');
+var variableResolver = require('./modules/variable_resolver');
 
 var truthy = function(c) {
+    // c = eval(c)
     return (typeof(c) !== 'undefined' && c !== '0' && c !== 'false' && c !== false && c !== null)
 }
 
@@ -12,7 +14,27 @@ var coreFunctions = {
     math: {
         '+': function(args, evalLeaf) {
             return args.length ?
-                "(" + args.map(evalLeaf).join('+') + ")" :
+                eval("(" + args.map(evalLeaf).join('+') + ")").toString() :
+                nothing;
+        },
+        '-': function(args, evalLeaf) {
+            return args.length ?
+                eval("(" + args.map(evalLeaf).join('-') + ")").toString() :
+                nothing;
+        },
+        '*': function(args, evalLeaf) {
+            return args.length ?
+                eval("(" + args.map(evalLeaf).join('*') + ")").toString() :
+                nothing;
+        },
+        '/': function(args, evalLeaf) {
+            return args.length ?
+                eval("(" + args.map(evalLeaf).join('/') + ")").toString() :
+                nothing;
+        },
+        '<': function(args, evalLeaf) {
+            return args.length ?
+                eval("(" + args.map(evalLeaf).join('<') + ")").toString() :
                 nothing;
         },
     },
@@ -52,18 +74,28 @@ var coreFunctions = {
         // define function
         // body, argument name 1, argument name 2, etc
         '`': function(args, evalLeaf) {
-            functionBodyLeaf = args[0]
+            var functionBodyLeaf = args[0];
+            var argumentsToTheFunction = _.rest(args);
             return function(funcParams) {
-                var localVars = {}
-                _.rest(args).map(evalLeaf).forEach(function(argName, i) {return localVars[argName] = funcParams[i]})
 
+                // When calling the function we have local vars.
+                var localVars = {}
+                // Call eval on each argument to the function before calling the function.
+                // Save them in localVars.
+                _.rest(args).map(evalLeaf).forEach(function(argName, i) {
+                    localVars[argName] = funcParams[i]
+                })
                 functionBodyLeaf['localVars'] = localVars
-                return evalLeaf(args[0])
+
+                // Finally evaluate the function body.
+                return evalLeaf(functionBodyLeaf)
             };
         },
         // lookup what is stored in an argument
-        '*': function(args, evalLeaf, parent) {
-            return parent.localVars[evalLeaf(args[0])];
+        '&': function(args, evalLeaf, parent) {
+            var variableName = evalLeaf(args[0])
+            // Needs to check over each parent in the tree for other local variables in the expression.
+            return variableResolver.VariableResolver.run(parent, variableName)
         },
     }
 }

@@ -23,7 +23,7 @@ exports.Expression = function(evalFunc, leaf) {
 
         run: function() {
             // pass the local varialbes to the function running
-            return this.function(this.arguments, evalFunc, leaf.parent)
+            return this.function(this.arguments, evalFunc, leaf)
         }
     }
 }

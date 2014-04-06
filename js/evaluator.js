@@ -12,6 +12,6 @@ exports.run = function(string) {
     try {
         return eval(string)
     } catch (exception) {
-        return exception.message;
+        return exception.message// + "\n" + exception.stack;
     }
 }

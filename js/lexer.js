@@ -26,40 +26,57 @@ exports.getKeyword = function(str) {
 exports.run = function(input) {
 
     return _.reduce(input, function(ac, c) {
-        var type = exports.getKeyword(c)
 
-        var addToLastTokensValue = function(ac, c) {
-            return _.initial(ac).concat({
-                type: _.last(ac).type,
-                value: _.last(ac).value + c
-            })
+        var isNotNewLine = function(c) {
+            // don't parse at all if new line.
+            return {
+                then: ((c === '\n') ? function() {
+                    // a funcation that ignores whats passed in.
+                    return ac;
+                } : function(f) {
+                    // call the passed function.
+                    return f();
+                })
+            }
         }
 
-        var isIdentifier = function(el) {
-            // could be checking the -1 indexed token.
-            return (el && el.type === 'identifier');
-        }
+        return isNotNewLine(c).then(function() {
+            var type = exports.getKeyword(c)
 
-        // factory for appending new tokens with value.
-        var append = function(ac, type, c) {
-            return ac.concat({
-                type: type,
-                value: c
-            })
-        }
+            var addToLastTokensValue = function(ac, c) {
+                return _.initial(ac).concat({
+                    type: _.last(ac).type,
+                    value: _.last(ac).value + c
+                })
+            }
 
-        // add a new identifier
-        var newIdentifier = function() {
-            return append(ac, "identifier", c)
-        }
-        var previousToken = _.last(ac)
+            var isIdentifier = function(el) {
+                // could be checking the -1 indexed token.
+                return (el && el.type === 'identifier');
+            }
 
-        if (type) {
-            return append(ac, type, null)
-        } else {
-            return isIdentifier(previousToken) ?
-                addToLastTokensValue(ac, c) :
-                newIdentifier()
-        }
+            // factory for appending new tokens with value.
+            var append = function(ac, type, c) {
+                return ac.concat({
+                    type: type,
+                    value: c
+                })
+            }
+
+            // add a new identifier
+            var newIdentifier = function() {
+                return append(ac, "identifier", c)
+            }
+            var previousToken = _.last(ac)
+
+            if (type) {
+                return append(ac, type, null)
+            } else {
+                return isIdentifier(previousToken) ?
+                    addToLastTokensValue(ac, c) :
+                    newIdentifier()
+            }
+        })
+
     }, [], this);
 };
