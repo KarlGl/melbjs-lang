@@ -3,7 +3,6 @@ var core = require('./core');
 var variableResolver = require('./modules/variable_resolver');
 
 var truthy = function(c) {
-    // c = eval(c)
     return (typeof(c) !== 'undefined' && c !== '0' && c !== 'false' && c !== false && c !== null)
 }
 

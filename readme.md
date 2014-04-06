@@ -1,17 +1,34 @@
-# Hello World
-> A [Bespoke.js](http://markdalgleish.com/projects/bespoke.js) presentation, built with [generator-bespoke](https://github.com/markdalgleish/generator-bespoke)
+Rather than putting in a fucntion I made a new class called 'variableResolver'
 
-## View slides locally
 
-First, ensure you have the following installed:
+variable = false or 2
 
-1. [Node.js](http://nodejs.org)
-2. [Bower](http://bower.io): `$ npm install -g bower`
-3. [Grunt](http://gruntjs.com): `$ npm install -g grunt-cli`
+expect{ test }.to raise_error do |e|
+  e.message.should eq("message")
+end
 
-Then, install dependencies and run the preview server:
+our code block is being passed to the to method, not to the raise error method.
+if we used curly braces instead of do-end it would pass.
 
-```bash
-$ npm install && bower install
-$ grunt server
-```
+"poetry mode"
+
+Code is poetry?
+
+Who is this actually helping?
+
+Who gives a fuck about poety? Poets. Non-programmers?
+
+Is "sugar" actually meaningfull symantics?
+
+var x = true;
+(function self() {
+	if (x) {
+		return self();
+	}
+})();
+
+
+Indentation forced languages.
+
+Anyone here not do the exact same indentation all the time for all thier code?
+You're already doing it!

@@ -5,78 +5,57 @@
 */
 
 var _ = require('../bower_components/lodash/dist/lodash');
-var l = function(c) {
-    console.log(c)
-}
-var getType = function(c) {
-    return 'identifier';
-}
-
-exports.scannerSymbols = {
-    '(': 'beginExp',
-    ')': 'endExp',
-    ',': 'comma',
-}
-
-exports.getKeyword = function(str) {
-    return exports.scannerSymbols[str]
-}
-
 
 exports.run = function(input) {
-
     return _.reduce(input, function(ac, c) {
 
-        var isNotNewLine = function(c) {
-            // don't parse at all if new line.
-            return {
-                then: ((c === '\n') ? function() {
-                    // a funcation that ignores whats passed in.
-                    return ac;
-                } : function(f) {
-                    // call the passed function.
-                    return f();
-                })
-            }
-        }
-
-        return isNotNewLine(c).then(function() {
-            var type = exports.getKeyword(c)
-
-            var addToLastTokensValue = function(ac, c) {
+        var char = {
+            // the intenal smybol for a keyword represented by this char.
+            keyword: {
+                '(': 'beginExp',
+                ')': 'endExp',
+                ',': 'comma',
+                '\n': 'newline',
+                ' ': 'space',
+            }[c],
+            // factory for appending new tokens with value.
+            addToLastTokensValue: function() {
                 return _.initial(ac).concat({
                     type: _.last(ac).type,
                     value: _.last(ac).value + c
                 })
-            }
-
-            var isIdentifier = function(el) {
+            },
+            addToLastTokensValueIfNoKeywordOrSpace: function(elseBlock) {
+                return (!this.keyword || this.keyword === 'space') ?
+                    this.addToLastTokensValue() :
+                    elseBlock();
+            },
+            isIdentifier: function(token) {
                 // could be checking the -1 indexed token.
-                return (el && el.type === 'identifier');
-            }
-
-            // factory for appending new tokens with value.
-            var append = function(ac, type, c) {
+                return (token && token.type === 'identifier');
+            },
+            append: function(type) {
                 return ac.concat({
                     type: type,
                     value: c
                 })
+            },
+            appendIdenfifierOrKeyword: function() {
+                return (this.keyword) ? this.append(this.keyword) : this.append('identifier');
+            },
+            withMyToken: function() {
+                var previousToken = _.last(ac);
+                // if prev is id, add to it if you are space or a char
+                return (this.isIdentifier(previousToken)) ?
+                    this.addToLastTokensValueIfNoKeywordOrSpace(function() {
+                        //else block
+                        return this.append(this.keyword)
+                    }.bind(this)) :
+                    this.appendIdenfifierOrKeyword()
             }
+        }
+        return char.withMyToken()
 
-            // add a new identifier
-            var newIdentifier = function() {
-                return append(ac, "identifier", c)
-            }
-            var previousToken = _.last(ac)
-
-            if (type) {
-                return append(ac, type, null)
-            } else {
-                return isIdentifier(previousToken) ?
-                    addToLastTokensValue(ac, c) :
-                    newIdentifier()
-            }
-        })
 
     }, [], this);
 };

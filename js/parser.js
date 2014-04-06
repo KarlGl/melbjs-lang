@@ -32,7 +32,14 @@ exports.run = function(tokens) {
                 comma: function(target) {
                     return this.defaultHandler(target);
                 },
+                space: function(target) {
+                    return this.defaultHandler(target);
+                },
+                newline: function(target) {
+                    return this.defaultHandler(target);
+                },
                 identifier: function(target) {
+                    
                     return this.defaultHandler(target);
                 },
             };
