@@ -13,9 +13,10 @@ exports.run = function(tree) {
         if (!leaf.type)
             return leaf;
         if (leaf.type === 'main object') {
-            return _.reduce(leaf.body, function(ac, node) {
-                return ac + evalLeaf(node)
-            }, "")
+            for (var i = 0; i < leaf.body.length - 1; i++) {
+              evalLeaf(leaf.body[i]);
+            }
+            return evalLeaf(leaf.body[leaf.body.length - 1]);
         }
         if (leaf.type === 'expression') {
             // Call the expression as a function. runs evalLeaf.
