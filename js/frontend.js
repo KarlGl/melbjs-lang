@@ -22,7 +22,7 @@ exports.init = (function() {
     }
 
     var input = $('#input')[0]
-    
+
     var inputChange = function() {
         var textIn = input.value
         console.log("New Evaluation!")
@@ -51,7 +51,7 @@ exports.init = (function() {
     document.body.style.backgroundColor = 'black'
     styleForCode(input)
     input.style.width = "50%"
-    input.style.height = "50%"
+    input.style.height = "80%"
     input.style.backgroundColor = "purple"
     input.style.color = "white"
 
